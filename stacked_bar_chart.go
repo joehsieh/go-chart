@@ -115,6 +115,15 @@ func (sbc StackedBarChart) Render(rp RendererProvider, w io.Writer) error {
 	}
 	r.SetDPI(sbc.GetDPI(DefaultDPI))
 
+	fullBox := Box{
+		Top:    0,
+		Left:   0,
+		Right:  sbc.GetWidth(),
+		Bottom: sbc.GetHeight(),
+	}
+
+	sbc.drawCanvas(r, fullBox)
+
 	var canvasBox Box
 	if sbc.IsHorizontal {
 		canvasBox = sbc.getHorizontalAdjustedCanvasBox(r, sbc.getDefaultCanvasBox())
