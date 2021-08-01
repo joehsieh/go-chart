@@ -381,7 +381,7 @@ func LegendCustomThin(c *Chart, userDefaults ...Style) Renderable {
 		}
 
 		legendBoxHeight := textHeight + legendStyle.Padding.Top + legendStyle.Padding.Bottom
-		chartPadding := cb.Top
+		chartPadding := cb.Top + 20
 		legendYMargin := (chartPadding - legendBoxHeight) >> 1
 
 		legendBox := Box{
