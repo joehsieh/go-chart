@@ -136,7 +136,7 @@ func (sbc StackedBarChart) Render(rp RendererProvider, w io.Writer) error {
 		sbc.drawCanvas(r, canvasBox)
 		sbc.drawBars(r, canvasBox)
 		sbc.drawXAxis(r, canvasBox)
-		sbc.drawYAxis(r, canvasBox)
+		// sbc.drawYAxis(r, canvasBox)
 	}
 
 	sbc.drawTitle(r)
