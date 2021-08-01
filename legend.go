@@ -399,29 +399,31 @@ func LegendCustomThin(c *Chart, userDefaults ...Style) Renderable {
 
 		lineTextGap := 2
 		squareLength := 20.0
-		yOffset := 2
+		xOffset := 10
+		yOffset := 0
 
 		tx := legendBox.Left + legendStyle.Padding.Left
 		ty := legendYMargin + legendStyle.Padding.Top + textHeight
 		var label string
 		var lx, ly int
 		th2 := textHeight >> 1
+		radius := 10.0
 		for index := range labels {
 			label = labels[index]
 			if len(label) > 0 {
-				textBox = r.MeasureText(label)
-				r.Text(label, tx, ty)
-
-				lx = tx + textBox.Width() + lineTextGap
-				ly = ty - th2
-
 				r.SetStrokeColor(lines[index].GetStrokeColor())
-				r.SetStrokeWidth(squareLength)
+				r.SetFillColor(lines[index].GetFillColor())
+				r.SetStrokeWidth(1)
 				r.SetStrokeDashArray(lines[index].GetStrokeDashArray())
 
-				r.MoveTo(lx, ly+yOffset)
-				r.LineTo(lx+int(squareLength), ly+yOffset)
-				r.Stroke()
+				r.Circle(radius, tx+xOffset, ty+yOffset)
+				r.FillStroke()
+
+				lx = tx + int(radius)*2 + lineTextGap
+				ly = ty + th2
+
+				textBox = r.MeasureText(label)
+				r.Text(label, lx, ly)
 
 				tx += textBox.Width() + DefaultMinimumTickHorizontalSpacing + lineTextGap + int(squareLength)
 			}
