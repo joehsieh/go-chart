@@ -397,9 +397,9 @@ func LegendCustomThin(c *Chart, userDefaults ...Style) Renderable {
 		r.SetFontColor(legendStyle.GetFontColor())
 		r.SetFontSize(legendStyle.GetFontSize())
 
-		lineTextGap := 5
+		lineTextGap := 2
 		squareLength := 20.0
-		yOffset := 4
+		yOffset := 2
 
 		tx := legendBox.Left + legendStyle.Padding.Left
 		ty := legendYMargin + legendStyle.Padding.Top + textHeight
