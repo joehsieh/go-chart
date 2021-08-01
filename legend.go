@@ -329,3 +329,102 @@ func LegendLeft(c *Chart, userDefaults ...Style) Renderable {
 		}
 	}
 }
+
+// LegendCustomThin is a special case for showing indicator of colors on the top of a chart
+func LegendCustomThin(c *Chart, userDefaults ...Style) Renderable {
+	return func(r Renderer, cb Box, chartDefaults Style) {
+		legendDefaults := Style{
+			FillColor:   drawing.ColorWhite,
+			FontColor:   DefaultTextColor,
+			FontSize:    14.0,
+			StrokeColor: DefaultAxisColor,
+			StrokeWidth: 0.0, // hide borderline
+			Padding: Box{
+				Top:    2,
+				Left:   7,
+				Right:  7,
+				Bottom: 5,
+			},
+		}
+
+		var legendStyle Style
+		if len(userDefaults) > 0 {
+			legendStyle = userDefaults[0].InheritFrom(chartDefaults.InheritFrom(legendDefaults))
+		} else {
+			legendStyle = chartDefaults.InheritFrom(legendDefaults)
+		}
+
+		r.SetFont(legendStyle.GetFont())
+		r.SetFontColor(legendStyle.GetFontColor())
+		r.SetFontSize(legendStyle.GetFontSize())
+
+		var labels []string
+		var lines []Style
+		for index, s := range c.Series {
+			if !s.GetStyle().Hidden {
+				if _, isAnnotationSeries := s.(AnnotationSeries); !isAnnotationSeries {
+					labels = append(labels, s.GetName())
+					lines = append(lines, s.GetStyle().InheritFrom(c.styleDefaultsSeries(index)))
+				}
+			}
+		}
+
+		var textHeight int
+		var textWidth int
+		var textBox Box
+		for x := 0; x < len(labels); x++ {
+			if len(labels[x]) > 0 {
+				textBox = r.MeasureText(labels[x])
+				textHeight = MaxInt(textBox.Height(), textHeight)
+				textWidth = MaxInt(textBox.Width(), textWidth)
+			}
+		}
+
+		legendBoxHeight := textHeight + legendStyle.Padding.Top + legendStyle.Padding.Bottom
+		chartPadding := cb.Top
+		legendYMargin := (chartPadding - legendBoxHeight) >> 1
+
+		legendBox := Box{
+			Left:   cb.Left,
+			Right:  cb.Right,
+			Top:    legendYMargin,
+			Bottom: legendYMargin + legendBoxHeight,
+		}
+
+		Draw.Box(r, legendBox, legendDefaults)
+
+		r.SetFont(legendStyle.GetFont())
+		r.SetFontColor(legendStyle.GetFontColor())
+		r.SetFontSize(legendStyle.GetFontSize())
+
+		lineTextGap := 5
+		squareLength := 20.0
+		yOffset := 4
+
+		tx := legendBox.Left + legendStyle.Padding.Left
+		ty := legendYMargin + legendStyle.Padding.Top + textHeight
+		var label string
+		var lx, ly int
+		th2 := textHeight >> 1
+		for index := range labels {
+			label = labels[index]
+			if len(label) > 0 {
+				textBox = r.MeasureText(label)
+				r.Text(label, tx, ty)
+
+				lx = tx + textBox.Width() + lineTextGap
+				ly = ty - th2
+
+				r.SetStrokeColor(lines[index].GetStrokeColor())
+				r.SetStrokeWidth(squareLength)
+				r.SetStrokeDashArray(lines[index].GetStrokeDashArray())
+
+				r.MoveTo(lx, ly+yOffset)
+				r.LineTo(lx+int(squareLength), ly+yOffset)
+				r.Stroke()
+
+				tx += textBox.Width() + DefaultMinimumTickHorizontalSpacing + lineTextGap + int(squareLength)
+			}
+		}
+	}
+}

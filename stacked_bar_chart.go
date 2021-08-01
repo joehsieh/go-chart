@@ -468,7 +468,7 @@ func (sbc StackedBarChart) getAdjustedCanvasBox(r Renderer, canvasBox Box) Box {
 			}
 		}
 		return Box{
-			Top:    canvasBox.Top,
+			Top:    canvasBox.Top + 44,
 			Left:   canvasBox.Left,
 			Right:  canvasBox.Left + totalWidth,
 			Bottom: sbc.GetHeight() - xaxisHeight,
